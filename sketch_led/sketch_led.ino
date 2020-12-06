@@ -1,6 +1,6 @@
 // test out our LEDs
 
-#define ledPinA 13
+#define ledPinA 10
 
 void setup()
 {
@@ -12,9 +12,9 @@ void loop()
 {
   digitalWrite(ledPinA, HIGH);
 
-  delay(1000);
-
-  digitalWrite(ledPinA, LOW);
-
-  delay(1000);
+//  delay(1000);
+//
+//  digitalWrite(ledPinA, LOW);
+//
+//  delay(1000);
 }
