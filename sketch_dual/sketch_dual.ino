@@ -53,9 +53,7 @@ void loop()
   Serial.println(" cm");
 
   lightup();
-//  digitalWrite(Led1, LOW);
-//  digitalWrite(Led2, LOW);
-//  digitalWrite(Led3, LOW);
+
   digitalWrite(Ledx, LOW);
 
   if (distance1 >= 1 && distance1 <= 9)
