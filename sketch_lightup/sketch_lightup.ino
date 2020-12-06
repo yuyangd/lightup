@@ -6,6 +6,7 @@
 int Led1 = 13;
 int Led2 = 12;
 int Led3 = 11;
+int led4 = 10;
 
 int sensor1 = 0;
 int sensor2 = 0;
@@ -31,7 +32,7 @@ void setup()
 void loop()
 {
   Serial.println("Activate Sensor1: ");
-  Serial.println(FSM_state)
+  Serial.println(FSM_state);
   digitalWrite(trigPinA, LOW);
   delayMicroseconds(2);
   digitalWrite(trigPinA, HIGH);
@@ -51,7 +52,7 @@ void loop()
 
   if (distance1 >= 1 && distance1 <= 9)
   {
-    // detect an object
+    //detect an object
     sensor1 = 1;
 
     if (sensor1 == 1)
@@ -66,7 +67,8 @@ void loop()
   }
 }
 
-void FSM() // detect the direction of the object
+void FSM() //detect the direction of the object
+{
   int contador;
   int s = 1000; //timeout
 
