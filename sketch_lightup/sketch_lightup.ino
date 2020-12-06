@@ -3,10 +3,10 @@
 #define echoPinB 6 // attach pin 6 Arduino to pin Echo of HC-SR04
 #define trigPinB 7 //attach pin 7 Arduino to pin Trig of HC-SR04
 
-int Led1 = 13;
+int Led1 = 13; 
 int Led2 = 12;
 int Led3 = 11;
-int led4 = 10;
+int Ledx = 10; //detect
 
 int sensor1 = 0;
 int sensor2 = 0;
@@ -15,6 +15,7 @@ volatile int FSM_state = 0;
 int score = 0;
 unsigned long tempo = 0;
 unsigned long r, s, x;
+bool walking = false;
 
 void setup()
 {
@@ -27,12 +28,17 @@ void setup()
   pinMode(Led1, OUTPUT);
   pinMode(Led2, OUTPUT);
   pinMode(Led3, OUTPUT);
+  pinMode(Ledx, OUTPUT);
 }
 
 void loop()
 {
   Serial.println("Activate Sensor1: ");
   Serial.println(FSM_state);
+
+  Serial.println("start loop, is walking: ");
+  Serial.println(walking);
+  
   digitalWrite(trigPinA, LOW);
   delayMicroseconds(2);
   digitalWrite(trigPinA, HIGH);
@@ -46,9 +52,11 @@ void loop()
   Serial.print(distance1);
   Serial.println(" cm");
 
-  digitalWrite(Led1, LOW);
-  digitalWrite(Led2, LOW);
-  digitalWrite(Led3, LOW);
+  lightup();
+//  digitalWrite(Led1, LOW);
+//  digitalWrite(Led2, LOW);
+//  digitalWrite(Led3, LOW);
+  digitalWrite(Ledx, LOW);
 
   if (distance1 >= 1 && distance1 <= 9)
   {
@@ -67,27 +75,46 @@ void loop()
   }
 }
 
+void lightup()
+{
+  Serial.println("lightup, is walking: ");
+  Serial.println(walking);
+  if (walking)
+  {
+    digitalWrite(Led1, HIGH);
+    delay(30);
+    digitalWrite(Led2, HIGH);
+    delay(30);
+    digitalWrite(Led3, HIGH);
+  }
+  else
+  {
+    digitalWrite(Led3, LOW);
+    delay(30);
+    digitalWrite(Led2, LOW);
+    delay(30);
+    digitalWrite(Led1, LOW);
+  }
+}
+
 void FSM() //detect the direction of the object
 {
-  int contador;
-  int s = 1000; //timeout
+  int s = 800; //timeout
 
   switch (FSM_state)
   {
 
   case 0:
-    digitalWrite(Led1, LOW);
-    digitalWrite(Led2, LOW);
-    digitalWrite(Led3, LOW);
+    lightup();
+    digitalWrite(Ledx, LOW);
 
     FSM_state = 1;
     break;
 
   case 1:
     r = millis(); //Returns the number of milliseconds passed since the Arduino board began running the current program
-    digitalWrite(Led1, HIGH);
-    digitalWrite(Led2, LOW);
-    digitalWrite(Led3, LOW);
+    lightup();
+    digitalWrite(Ledx, HIGH);
     FSM_state = 2;
     break;
 
@@ -113,9 +140,9 @@ void FSM() //detect the direction of the object
     break;
 
   case 3:
-    digitalWrite(Led1, HIGH);
-    digitalWrite(Led2, HIGH);
-    digitalWrite(Led3, LOW);
+    walking = true;
+    digitalWrite(Ledx, HIGH);
+    lightup();
     Serial.println();
     Serial.print("-------------------------------------------");
     Serial.println();
@@ -126,12 +153,14 @@ void FSM() //detect the direction of the object
     score++;
     Serial.println(score);
     FSM_state = 0;
+    
     break;
 
   case 4:
-    digitalWrite(Led1, LOW);
-    digitalWrite(Led2, LOW);
-    digitalWrite(Led3, HIGH);
+    walking = false;
+    digitalWrite(Ledx, HIGH);
+    lightup();
+    
     Serial.println();
     Serial.print("-------------------------------------------");
     Serial.println();
@@ -141,6 +170,7 @@ void FSM() //detect the direction of the object
     Serial.println();
     delay(200);
     FSM_state = 0;
+    
     break;
   }
 }
