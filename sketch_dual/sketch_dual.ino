@@ -17,15 +17,18 @@ int sensor1 = 0;
 int sensor2 = 0;
 int sensor3 = 0;
 int sensor4 = 0;
+int frontsensors = 0;
 
+float duration, distance;
 float duration1, distance1, distance2, duration2;
 float duration3, distance3, distance4, duration4;
 
 volatile int FSM_state = 0;
+volatile int FSM2_state = 0;
 int score = 0;
 unsigned long tempo = 0;
 unsigned long r, s, x;
-unsigned long w, v;
+unsigned long j, z;
 bool walking = false;
 
 void setup()
@@ -47,8 +50,9 @@ void setup()
   pinMode(Ledx, OUTPUT);
 }
 
-float frontsensor(int trigPin, int echoPin){
-  Serial.println("Activate Sensor1 & Sensor4: ");  
+float frontsensor(int trigPin, int echoPin)
+{
+  Serial.println("Activate Sensor1 & Sensor4: ");
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
   digitalWrite(trigPin, HIGH);
@@ -58,13 +62,23 @@ float frontsensor(int trigPin, int echoPin){
   duration = pulseIn(echoPin, HIGH); //tini=micros();
   distance = (duration / 2) * 0.0345;
 
-  Serial.print("Distance A: ");
   Serial.print(distance);
   Serial.println(" cm");
-  return distance
+  return distance;
 
 }
 
+float backsensor(int trigPin, int echoPin)
+{
+    Serial.println("Activate Sensor2 & Sensor3: ");  
+    delay(60);
+    digitalWrite(trigPin, HIGH);
+    delayMicroseconds(500);
+    digitalWrite(trigPin, LOW);
+    duration = pulseIn(echoPin, HIGH);
+    distance = (duration / 2) * 0.0344;
+    return distance;
+}
 
 void loop()
 {
@@ -73,26 +87,29 @@ void loop()
 
   Serial.println("start loop, is walking: ");
   Serial.println(walking);
-  
-//  digitalWrite(trigPinA, LOW);
-//  delayMicroseconds(2);
-//  digitalWrite(trigPinA, HIGH);
-//  delayMicroseconds(10);
-//  digitalWrite(trigPinA, LOW);
-//
-//  duration1 = pulseIn(echoPinA, HIGH); //tini=micros();
-//  distance1 = (duration1 / 2) * 0.0345;
-//
-//  Serial.print("Distance A: ");
-//  Serial.print(distance1);
-//  Serial.println(" cm");
 
-  distance1 = frontsensor(trigPinA, echoPinA)
-  distance4 = frontsensor(trigPinD, echoPinD)
+  distance1 = frontsensor(trigPinA, echoPinA);
+  distance4 = frontsensor(trigPinD, echoPinD);
   
   lightup();
 
   digitalWrite(Ledx, LOW);
+
+  if (distance4 >= 1 && distance4 <= 9)
+  {
+    //detect an object
+    sensor4 = 1;
+
+    if (sensor4 == 1)
+    {
+
+      FSM2();
+    }
+  }
+  else
+  {
+    sensor4 = 0;
+  }
 
   if (distance1 >= 1 && distance1 <= 9)
   {
@@ -109,6 +126,8 @@ void loop()
   {
     sensor1 = 0;
   }
+
+
 }
 
 void lightup()
@@ -156,12 +175,8 @@ void FSM() //detect the direction of the object
 
   case 2:
 
-    delay(60);
-    digitalWrite(trigPinB, HIGH);
-    delayMicroseconds(500);
-    digitalWrite(trigPinB, LOW);
-    duration2 = pulseIn(echoPinB, HIGH);
-    distance2 = (duration2 / 2) * 0.0344;
+    distance2 = backsensor(trigPinB, echoPinB);
+
     x = millis() - r;
 
     if ((distance2 >= 1 && distance2 < 9) && (x < s))
@@ -206,6 +221,81 @@ void FSM() //detect the direction of the object
     Serial.println();
     delay(200);
     FSM_state = 0;
+    
+    break;
+  }
+}
+
+void FSM2() //detect the direction of the object
+{
+  int s = 800; //timeout
+
+  switch (FSM2_state)
+  {
+
+  case 0:
+    lightup();
+    digitalWrite(Ledx, LOW);
+
+    FSM2_state = 1;
+    break;
+
+  case 1:
+    j = millis(); //Returns the number of milliseconds passed since the Arduino board began running the current program
+    lightup();
+    digitalWrite(Ledx, LOW);
+    FSM2_state = 2;
+    break;
+
+  case 2:
+
+    digitalWrite(Ledx, HIGH);
+    distance3 = backsensor(trigPinC, echoPinC);
+
+    z = millis() - j;
+
+    if ((distance3 >= 1 && distance3 < 9) && (z < s))
+    {
+
+      FSM2_state = 3;
+    }
+    else
+    {
+      FSM2_state = 4;
+    }
+    break;
+
+  case 3:
+    walking = true;
+    digitalWrite(Ledx, HIGH);
+    lightup();
+    Serial.println();
+    Serial.print("-------------------------------------------");
+    Serial.println();
+    Serial.print("-----------CORRECT-------------- ");
+    Serial.println();
+    Serial.print("-------------------------------------------");
+    Serial.println();
+    score++;
+    Serial.println(score);
+    FSM2_state = 0;
+    
+    break;
+
+  case 4:
+    walking = false;
+    digitalWrite(Ledx, HIGH);
+    lightup();
+    
+    Serial.println();
+    Serial.print("-------------------------------------------");
+    Serial.println();
+    Serial.print("-----------INCORRECT -------------- ");
+    Serial.println();
+    Serial.print("-------------------------------------------");
+    Serial.println();
+    delay(200);
+    FSM2_state = 0;
     
     break;
   }
