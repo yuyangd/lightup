@@ -3,6 +3,11 @@
 #define echoPinB 6 // attach pin 6 Arduino to pin Echo of HC-SR04
 #define trigPinB 7 //attach pin 7 Arduino to pin Trig of HC-SR04
 
+#define echoPinC 4
+#define trigPinC 5
+#define echoPinD 2
+#define trigPinD 3
+
 int Led1 = 13; 
 int Led2 = 12;
 int Led3 = 11;
@@ -10,11 +15,17 @@ int Ledx = 10; //detect
 
 int sensor1 = 0;
 int sensor2 = 0;
+int sensor3 = 0;
+int sensor4 = 0;
+
 float duration1, distance1, distance2, duration2;
+float duration3, distance3, distance4, duration4;
+
 volatile int FSM_state = 0;
 int score = 0;
 unsigned long tempo = 0;
 unsigned long r, s, x;
+unsigned long w, v;
 bool walking = false;
 
 void setup()
@@ -25,33 +36,60 @@ void setup()
   pinMode(trigPinB, OUTPUT);
   pinMode(echoPinB, INPUT);
 
+  pinMode(trigPinC, OUTPUT);
+  pinMode(echoPinC, INPUT);
+  pinMode(trigPinD, OUTPUT);
+  pinMode(echoPinD, INPUT);
+
   pinMode(Led1, OUTPUT);
   pinMode(Led2, OUTPUT);
   pinMode(Led3, OUTPUT);
   pinMode(Ledx, OUTPUT);
 }
 
+float frontsensor(int trigPin, int echoPin){
+  Serial.println("Activate Sensor1 & Sensor4: ");  
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  duration = pulseIn(echoPin, HIGH); //tini=micros();
+  distance = (duration / 2) * 0.0345;
+
+  Serial.print("Distance A: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+  return distance
+
+}
+
+
 void loop()
 {
-  Serial.println("Activate Sensor1: ");
+  Serial.println("FSM State: ");
   Serial.println(FSM_state);
 
   Serial.println("start loop, is walking: ");
   Serial.println(walking);
   
-  digitalWrite(trigPinA, LOW);
-  delayMicroseconds(2);
-  digitalWrite(trigPinA, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trigPinA, LOW);
+//  digitalWrite(trigPinA, LOW);
+//  delayMicroseconds(2);
+//  digitalWrite(trigPinA, HIGH);
+//  delayMicroseconds(10);
+//  digitalWrite(trigPinA, LOW);
+//
+//  duration1 = pulseIn(echoPinA, HIGH); //tini=micros();
+//  distance1 = (duration1 / 2) * 0.0345;
+//
+//  Serial.print("Distance A: ");
+//  Serial.print(distance1);
+//  Serial.println(" cm");
 
-  duration1 = pulseIn(echoPinA, HIGH); //tini=micros();
-  distance1 = (duration1 / 2) * 0.0345;
-
-  Serial.print("Distance A: ");
-  Serial.print(distance1);
-  Serial.println(" cm");
-
+  distance1 = frontsensor(trigPinA, echoPinA)
+  distance4 = frontsensor(trigPinD, echoPinD)
+  
   lightup();
 
   digitalWrite(Ledx, LOW);
