@@ -119,8 +119,9 @@ void FSM() //detect the direction of the object
   case 2:
 
     delay(60);
+
     digitalWrite(trigPinB, HIGH);
-    delayMicroseconds(500);
+    delayMicroseconds(400);
     digitalWrite(trigPinB, LOW);
     duration2 = pulseIn(echoPinB, HIGH);
     distance2 = (duration2 / 2) * 0.0344;
