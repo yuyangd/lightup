@@ -1,0 +1,1 @@
+inspect all the sensors

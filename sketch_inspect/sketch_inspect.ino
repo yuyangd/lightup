@@ -50,8 +50,8 @@ void setup()
 
 float frontsensor(int trigPin, int echoPin)
 {
-  // Serial.println("Activate Sensor1 & Sensor4: ");
   float duration, distance;
+  // Serial.println("Activate Sensor1 & Sensor4: ");
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
   digitalWrite(trigPin, HIGH);
@@ -68,8 +68,8 @@ float frontsensor(int trigPin, int echoPin)
 
 float backsensor(int trigPin, int echoPin)
 {
-  // Serial.println("Activate Sensor2 & Sensor3: ");
   float duration, distance;
+  // Serial.println("Activate Sensor2 & Sensor3: ");
   delay(60);
   digitalWrite(trigPin, HIGH);
   delayMicroseconds(500);
@@ -81,32 +81,28 @@ float backsensor(int trigPin, int echoPin)
 
 void loop()
 {
-  Serial.print(">>FSM_state: ");
-  Serial.println(FSM_state);
+//  Serial.print(">>FSM_state: ");
+//  Serial.println(FSM_state);
 
   distance1 = frontsensor(trigPinA, echoPinA);
+  Serial.print("Distance 1: ");
+  Serial.println(distance1);
+//  distance2 = backsensor(trigPinB, echoPinB);
+//  Serial.print("Distance 2: ");
+//  Serial.println(distance2);
+//  distance3 = backsensor(trigPinC, echoPinC);
+//  Serial.print("Distance 3: ");
+//  Serial.println(distance3);
   distance4 = frontsensor(trigPinD, echoPinD);
+  Serial.print("Distance 4: ");
+  Serial.println(distance4);
 
+  walking = 1;
   lightup();
 
-  digitalWrite(Ledx, LOW);
+  digitalWrite(Ledx, HIGH);
+  delay(1000);
 
-  if (distance4 >= 1 && distance4 <= 9)
-  {
-    //detect an object, activate sensor4
-    sensor4 = 1;
-  }
-
-  if (distance1 >= 1 && distance1 <= 9)
-  {
-    //detect an object, activate sensor1
-    sensor1 = 1;
-  }
-
-  if ((sensor1 + sensor4) >= 1)
-  {
-    FSM();
-  }
 }
 
 void lightup()
@@ -124,110 +120,5 @@ void lightup()
     digitalWrite(Led3, LOW);
     digitalWrite(Led2, LOW);
     digitalWrite(Led1, LOW);
-  }
-}
-
-void FSM() //detect the state of the object
-{
-  int detect_timeout = 1000; //timeout 1s
-  switch (FSM_state)
-  {
-
-  case 0:
-    lightup();
-    digitalWrite(Ledx, LOW);
-    if (sensor1 == 1)
-    {
-      FSM_state = 1;
-    }
-    if (sensor4 == 1)
-    {
-      FSM_state = 2;
-    }
-
-    break;
-
-  case 1:
-    timer1 = millis(); // activate timer_r for sensor 2
-    lightup();
-    digitalWrite(Ledx, HIGH);
-    FSM_state = 3;
-    break;
-
-  case 2:
-    timer2 = millis(); // activate timer_t for sensor 3
-    lightup();
-    digitalWrite(Ledx, HIGH);
-    FSM_state = 4;
-    break;
-
-  case 3:
-    // sensor 2 detect within timer1
-    distance2 = backsensor(trigPinB, echoPinB);
-
-    timer1_diff = millis() - timer1;
-
-    // sensor2 activated within timer1
-
-    if (timer1_diff < detect_timeout)
-    {
-      if (distance2 >= 1 && distance2 < 9)
-      {
-        FSM_state = 5;
-      }
-    }
-    else
-    {
-      FSM_state = 6;
-    }
-    break;
-
-  case 4:
-    // sensor 3 detect within timer2
-    distance3 = backsensor(trigPinC, echoPinC);
-
-    timer2_diff = millis() - timer2;
-
-    if (timer2_diff < detect_timeout)
-    {
-      if (distance3 >= 1 && distance3 < 9)
-      {
-        FSM_state = 5;
-      }
-    }
-    else
-    {
-      FSM_state = 6;
-    }
-
-    break;
-
-  case 5:
-    walking = 1;
-    digitalWrite(Ledx, HIGH);
-    lightup();
-
-    Serial.println();
-    Serial.print("-----------IN-------------- ");
-    Serial.println();
-    sensor1 = 0;
-    sensor4 = 0;
-    FSM_state = 0;
-
-    break;
-
-  case 6:
-    walking = 0;
-    digitalWrite(Ledx, LOW);
-    lightup();
-    Serial.println();
-    Serial.print("-----------OUT -------------- ");
-    Serial.println();
-
-    sensor1 = 0;
-    sensor4 = 0;
-    FSM_state = 0;
-
-    break;
   }
 }
