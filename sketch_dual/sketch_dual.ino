@@ -1,23 +1,24 @@
-#define echoPinA 8 // attach pin 8 Arduino to pin Echo of HC-SR04
-#define trigPinA 9 //attach pin 9 Arduino to pin Trig of HC-SR04
-#define echoPinB 6 // attach pin 6 Arduino to pin Echo of HC-SR04
-#define trigPinB 7 //attach pin 7 Arduino to pin Trig of HC-SR04
+#define echoPinA 9 
+#define trigPinA 10
+#define echoPinB 7
+#define trigPinB 8
 
-#define echoPinC 4
-#define trigPinC 5
-#define echoPinD 2
-#define trigPinD 3
+#define echoPinC 5
+#define trigPinC 6
+#define echoPinD 3
+#define trigPinD 4
 
 int Led1 = 13;
 int Led2 = 12;
 int Led3 = 11;
-int Ledx = 10; //detect
+int Ledx = 10; // indicator of sensor detection
 
 int sensor1 = 0;
 int sensor2 = 0;
 int sensor3 = 0;
 int sensor4 = 0;
 
+float wall_distance = 5.5;
 float duration1, distance1, distance2, duration2;
 float duration3, distance3, distance4, duration4;
 
@@ -61,8 +62,8 @@ float frontsensor(int trigPin, int echoPin)
   duration = pulseIn(echoPin, HIGH); //tini=micros();
   distance = (duration / 2) * 0.0345;
 
-  // Serial.print(distance);
-  // Serial.println(" cm");
+   Serial.print(distance);
+   Serial.println(" cm");
   return distance;
 }
 
@@ -91,13 +92,13 @@ void loop()
 
   digitalWrite(Ledx, LOW);
 
-  if (distance4 >= 1 && distance4 <= 9)
+  if (distance4 >= 1 && distance4 <= wall_distance)
   {
     //detect an object, activate sensor4
     sensor4 = 1;
   }
 
-  if (distance1 >= 1 && distance1 <= 9)
+  if (distance1 >= 1 && distance1 <= wall_distance)
   {
     //detect an object, activate sensor1
     sensor1 = 1;
@@ -171,7 +172,7 @@ void FSM() //detect the state of the object
 
     if (timer1_diff < detect_timeout)
     {
-      if (distance2 >= 1 && distance2 < 9)
+      if (distance2 >= 1 && distance2 < wall_distance)
       {
         FSM_state = 5;
       }
@@ -190,7 +191,7 @@ void FSM() //detect the state of the object
 
     if (timer2_diff < detect_timeout)
     {
-      if (distance3 >= 1 && distance3 < 9)
+      if (distance3 >= 1 && distance3 < wall_distance)
       {
         FSM_state = 5;
       }
