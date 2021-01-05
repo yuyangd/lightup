@@ -6,8 +6,8 @@
 // Tested on 17 September 2019
 // ---------------------------------------------------------------- //
 
-#define echoPinA 3 // attach pin 8 Arduino to pin Echo of HC-SR04
-#define trigPinA 4 //attach pin 9 Arduino to pin Trig of HC-SR04
+#define echoPinA 5 // attach pin 8 Arduino to pin Echo of HC-SR04
+#define trigPinA 6 //attach pin 9 Arduino to pin Trig of HC-SR04
 //#define echoPinB 6 // attach pin 6 Arduino to pin Echo of HC-SR04
 //#define trigPinB 7 //attach pin 7 Arduino to pin Trig of HC-SR04
 
@@ -69,18 +69,22 @@ float backsensor(int trigPin, int echoPin)
   digitalWrite(trigPin, LOW);
   duration = pulseIn(echoPin, HIGH);
   distance = (duration / 2) * 0.0344;
-  Serial.print(distance);
-  Serial.println(" cm");
+//  Serial.print(distance);
+//  Serial.println(" cm");
   return distance;
 }
 
 void loop()
 {
   
-  distance = backsensor(trigPinA, echoPinA);
-  Serial.print("Distance A: ");
+  distance = frontsensor(trigPinA, echoPinA);
+  if (distance < 5.5)
+  {
+  Serial.print("Distance: ");
   Serial.print(distance);
-  Serial.println(" cm");
+  Serial.println(" cm");    
+  }
+
 
 //  distance = getDistance(trigPinB, echoPinB);
 //  Serial.print("Distance B: ");
