@@ -86,14 +86,14 @@ void loop()
   Serial.println(FSM_state);
 
   distance4 = frontsensor(trigPinD, echoPinD);
-  if (distance4 >= 1 && distance4 <= wall_distance)
+  if (distance4 >= 0 && distance4 <= wall_distance)
   {
     //detect an object, activate sensor4
     sensor4 = 1;
   }
 
   distance1 = frontsensor(trigPinA, echoPinA);
-  if (distance1 >= 1 && distance1 <= wall_distance)
+  if (distance1 >= 0 && distance1 <= wall_distance)
   {
     //detect an object, activate sensor1
     sensor1 = 1;
@@ -105,15 +105,45 @@ void loop()
   }
 }
 
+void lightdown()
+{
+//  Serial.println("lightup, is walking: ");
+//  Serial.println(walking);
+  if (walking >= 1)
+  {
+  int x;
+ for(x=1; x<= 7; x++)
+ {
+   digitalWrite(Led3, x & 4 );   // sets the LED on
+   digitalWrite(Led2, x & 2 );   // sets the LED on
+   digitalWrite(Led1, x & 1);   // sets the LED on
+ 
+   delay(50);                  
+ }
+  }
+  else
+  {
+    digitalWrite(Led3, LOW);
+    digitalWrite(Led2, LOW);
+    digitalWrite(Led1, LOW);
+  }
+}
+
 void lightup()
 {
 //  Serial.println("lightup, is walking: ");
 //  Serial.println(walking);
-  if (walking == 1)
+  if (walking >= 1)
   {
-    digitalWrite(Led1, HIGH);
-    digitalWrite(Led2, HIGH);
-    digitalWrite(Led3, HIGH);
+  int x;
+ for(x=1; x<= 7; x++)
+ {
+   digitalWrite(Led1, x & 4 );   // sets the LED on
+   digitalWrite(Led2, x & 2 );   // sets the LED on
+   digitalWrite(Led3, x & 1);   // sets the LED on
+ 
+   delay(50);                  
+ }
   }
   else
   {
@@ -145,15 +175,11 @@ void FSM() //detect the state of the object
 
   case 1:
     timer1 = millis(); // activate timer_r for sensor 2
-//    lightup();
-//    digitalWrite(Ledx, HIGH);
     FSM_state = 3;
     break;
 
   case 2:
     timer2 = millis(); // activate timer_t for sensor 3
-//    lightup();
-//    digitalWrite(Ledx, HIGH);
     FSM_state = 4;
     break;
 
@@ -165,14 +191,14 @@ void FSM() //detect the state of the object
     if (timer1_diff < detect_timeout)
     {
       distance2 = backsensor(trigPinB, echoPinB);
-      if (distance2 >= 1 && distance2 < wall_distance)
+      if (distance2 >= 0 && distance2 < wall_distance)
       {
-        FSM_state = 5;
+        FSM_state = 7;
       }
     }
     else
     {
-      FSM_state = 6;
+      FSM_state = 8;
     }
     break;
 
@@ -185,7 +211,7 @@ void FSM() //detect the state of the object
     if (timer2_diff < detect_timeout)
     {
       distance3 = backsensor(trigPinC, echoPinC);
-      if (distance3 >= 1 && distance3 < wall_distance)
+      if (distance3 >= 0 && distance3 < wall_distance)
       {
         FSM_state = 5;
       }
@@ -198,23 +224,17 @@ void FSM() //detect the state of the object
     break;
 
   case 5:
-    walking = 1;
-//    digitalWrite(Ledx, HIGH);
-    lightup();
-
     Serial.println();
     Serial.print("-----------IN-------------- ");
     Serial.println();
     sensor1 = 0;
     sensor4 = 0;
     FSM_state = 0;
-
+    walking = 1;
+    lightup();
     break;
 
   case 6:
-    walking = 0;
-//    digitalWrite(Ledx, LOW);
-    lightup();
     Serial.println();
     Serial.print("-----------OUT -------------- ");
     Serial.println();
@@ -222,7 +242,31 @@ void FSM() //detect the state of the object
     sensor1 = 0;
     sensor4 = 0;
     FSM_state = 0;
+    walking = 0;
+    lightup();
+    break;
 
+  case 7:
+    Serial.println();
+    Serial.print("-----------IN-------------- ");
+    Serial.println();
+    sensor1 = 0;
+    sensor4 = 0;
+    FSM_state = 0;
+    walking = 1;
+    lightdown();
+    break;
+
+  case 8:
+    Serial.println();
+    Serial.print("-----------OUT -------------- ");
+    Serial.println();
+
+    sensor1 = 0;
+    sensor4 = 0;
+    FSM_state = 0;
+    walking = 0;
+    lightdown();
     break;
   }
 }
