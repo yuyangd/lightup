@@ -67,6 +67,7 @@ float backsensor(int trigPin, int echoPin)
   digitalWrite(trigPin, HIGH);
   delayMicroseconds(500);
   digitalWrite(trigPin, LOW);
+ 
   duration = pulseIn(echoPin, HIGH);
   distance = (duration / 2) * 0.0344;
 //  Serial.print(distance);

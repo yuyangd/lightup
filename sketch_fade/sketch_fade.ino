@@ -124,6 +124,7 @@ void lightdown()
   }
   else
   {
+    Serial.println("light down -> off ");
     digitalWrite(Led3, LOW);
     digitalWrite(Led2, LOW);
     digitalWrite(Led1, LOW);
@@ -148,6 +149,7 @@ void lightup()
   }
   else
   {
+    Serial.println("light up -> off ");
     digitalWrite(Led3, LOW);
     digitalWrite(Led2, LOW);
     digitalWrite(Led1, LOW);
