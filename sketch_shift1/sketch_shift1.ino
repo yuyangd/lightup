@@ -19,15 +19,18 @@ void writeReg()
 
 void setup()
 {
+  Serial.begin(9600);
+  
     pinMode(DS_pin, OUTPUT);
     pinMode(STCP_pin, OUTPUT);
-    pinMode(DS_pin, OUTPUT);
+    pinMode(SHCP_pin, OUTPUT);
 
     writeReg();  
 }
 
 void loop()
 {
+  
   for(int i = 0; i<8 ; i++)
   {
     registers[i]=HIGH;
